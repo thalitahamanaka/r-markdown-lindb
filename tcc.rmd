@@ -1,0 +1,404 @@
+---
+title: "Nova Lei de Introdução às Normas do Direito Brasileiro, Consequencialismo e Jurimetria: um estudo sobre as decisões do Tribunal de Contas da União."
+date: "`r format(Sys.Date(), '%d de %B de %Y')`"
+author: "Murilo Arakaki<br>Simone Andréa Rodrigues<br>Thalita Tiengo Hamanaka<br>Ulisses Marins Malinosky<br>**Professor Orientador:** Dr. Gilson Piqueras Garcia"
+output: html_document
+---
+
+```{r setup, include = F, message = F}
+#options(xtable.comment = FALSE)
+knitr::opts_chunk$set(echo = F, message = F, comment = F, warning = F, fig.height = 5, fig.width = 9)
+options(OutDec = ',')
+# options(knitr.table.format = 'markdown')
+```
+
+```{r include_table, echo = F, message = F, include = F}
+library(tidyverse)
+if (!knitr::is_html_output()) {
+
+  knit_print.data.frame = function(x, ...) {
+
+    res <- capture.output(x %>%
+                            xtable::xtable(...) %>%
+                            print(type = 'latex', tabular.enviroment = 'longtable', comment = F, include.rownames = F))
+    res %>%
+      paste0(collapse = '\n') %>%
+      stringr::str_replace_all(stringr::fixed("{table}[ht]"), "{table}[H]") %>%
+      knitr::asis_output()
+  }
+
+  kable = knit_print.data.frame
+
+  # theme if Latex
+  { theme_minimal(12) +
+    theme(text = element_text(family = "sf", colour = '#0c0c0c', face = 'plain')) } %>%
+    theme_set()
+
+} else {
+  kable <- knitr::kable
+
+        #' Theme if html
+  { theme_minimal(15) +
+    theme(text = element_text(family = "helvetica", colour = '#3a3a3a', face = 'plain')) } %>%
+    theme_set()
+}
+```
+
+<br>
+
+# Resumo {-}
+
+O objetivo deste trabalho é avaliar em que medida as decisões do Tribunal de Contas da União (TCU) consideram os preceitos do Consequencialismo inseridos na Lei de Introdução às Normas do Direito Brasileiro (LINDB), em 2018, a fim de aumentar a segurança jurídica e a eficiência na aplicação do Direito Público. Esta investigação se justifica para compreender o posicionamento do TCU frente aos objetivos propostos pela alteração legislativa e, a partir daí, eventualmente se propor medidas de reforço ou ajuste. Trata-se de pesquisa exploratória e quantitativa, que utiliza ferramentas da Jurimetria, a Estatística aplicada ao Direito, em especial a mineração de texto para identificar indicadores de relevância semântica nos acórdãos proferidos pelo Tribunal. Apesar da polarização acerca da Nova LINDB entre seus apoiadores e seus críticos, inicialmente liderados pelo TCU, os resultados compilados e apresentados na forma de tabelas e gráficos facilitam a evidenciação da crescente adesão dessa Corte de Contas às novas disposições legais. **Palavras-chave:** Consequencialismo. LINDB. Tribunal de Contas. Jurimetria. TCU.
+
+<h1>Abstract</h1>
+
+The aim of this paper is to assess to what extent the decisions of the Federal Court of Accounts (TCU) consider the precepts of Consequentialism inserted in the Law of Introduction to the Rules of Brazilian Law (LINDB), in 2018, in order to increase legal certainty and efficiency in the application of Public Law. This investigation is justified to understand the position of TCU regarding the objectives proposed by the legislative change and, from there, to eventually propose measures of reinforcement or adjustment. This is an exploratory and quantitative research, which uses tools from Jurimetrics, Statistics applied to Law, in particular text mining to identify indicators of semantic relevance in the judgments rendered by the Court. Despite de polarization about the New LINDB between supporters and critics, initially led by TCU, the results compiled and presented in the form of tables and graphs facilitate the evidence of the growing adherence of this Court of Accounts to the new legal provisions. **Keywords**: Consequentialism. LINDB. Court of Accounts. Jurimetrics. TCU.
+
+# Introdução
+
+
+A Lei de Introdução às Normas do Direito Brasileiro (LINDB) foi alterada em 2018 para adicionar novas balizas interpretativas, processuais e de control (SUNDFELD; MARQUES NETO, 2013, p. 2) que pudessem promover a melhoria da segurança jurídica e da eficiência na aplicação do Direito, em especial para inibir decisões, nas esferas administrativa, judicial e controladora, pautadas apenas em valores jurídicos abstratos, sem que fossem consideradas as suas consequências práticas. Nas ciências jurídicas, tais requisitos impostos por lei em relação ao teor das decisões traduzem o chamado Consequencialismo jurídico.
+
+Na esfera controladora, importa ressaltar a importância de que as decisões tomadas pelos julgadores pátrios no âmbito do Controle Externo sejam fundadas em uma perspectiva de menor onerosidade ao erário, a partir da compreensão do mandato constitucional conferido aos Tribunais de Contas, sobretudo em face dos vultosos recursos geridos pelo Poder Público. Assim, discute-se a necessidade de adoção de um enfoque mais pragmático por parte dos órgãos de controle externo, a ponto de considerarem que a melhor solução a ser eventualmente aplicada, mesmo em casos de graves desvios, poderá não ser aquela que suspenda de imediato a execução de um contrato administrativo, visto que as circunstâncias do caso concreto podem indicar que a continuidade do contrato seja a opção que minimize, ao final, os prejuízos causados à entidade pública contratante e, por último, à população, o que melhor se alinha, ao final e em alguma medida, com o ideário consequencialista.
+
+Apesar dessa expectativa em torno da Nova LINDB; cuja gênese reside na percepção, segundo os autores de seu Projeto de Lei, de exaustão do atual modelo de normatização administrativa, o qual, de um lado, regularia o funcionamento e atuação do Estado e, de outro, viabilizaria um amplo controle de seu desempenho, mas que, de fato, produz efeitos contraditórios, aprofundando a precarização da segurança jurídica; representantes dos agentes políticos que atuam nos tribunais de contas, os quais postulam terem sido estes os principais destinatários da alteração legislativa em questão, ressentiram-se de não terem sido chamados às discussões com economistas, juristas, administradores públicos e formadores de opinião dos mais variados matizes, o que tornaria desarrazoada a conclusão de que a norma teria sido amplamente debatida e que os tribunais de contas seriam os responsáveis pela insegurança jurídica, ineficiência e paralisia da Administração Pública (BRASIL, 2018, p. 7-12). Ao contrário disso, os defensores das mudanças arguiam que os principais destinatários de tal novação legislativa seriam os agentes públicos em seu sentido amplo, e não somente aqueles que militam nas cortes de contas e no controle.
+
+Soma-se a essa discussão o fato de que a apreciação em decisão terminativa do PLS 349/2015 pela Comissão de Constituição, Justiça e Cidadania do Senado Federal e, no mesmo sentido, a aprovação terminativa do PL 7.448/2017 pela Comissão de Constituição e Justiça e de Cidadania da Câmara dos Deputados, deram-se sem debate público nos plenários, o que para os críticos das mudanças na Lei pareceu macular a legitimidade arguida pelos defensores da Nova LINDB, dada a importância da Lei de Introdução ao Direito Brasileiro para o ordenamento jurídico nacional, ainda que o processo legislativo tenha sido rigorosamente observado nos termos da Constituição Federal de 1988 (CF/88) e dos Regimentos Internos das Casas Legislativas.
+
+Posto assim, percebem-se os ingredientes de potencial conflito entre apoiadores e críticos da Nova LINDB. Portanto, interessa entender o comportamento do TCU diante da Lei posta e vigente, externado em suas manifestações colegiadas, ao decidir o mérito de casos concretos relativos à validade de atos, contratos, ajustes, normas e procedimentos.
+
+Nesse sentido, o objetivo deste trabalho é buscar revelar o posicionamento geral do TCU não em relação ao Consequencialismo propriamente dito, mas sim em relação à adoção, em seus julgados, de uma semântica que permita inferir que essa Corte de Contas apreciou em maior ou menor grau os efeitos práticos de suas decisões como balizas interpretativas, em consonância com as novas disposições contidas na LINDB: frente a uma dada série histórica sob exame, a saber, a partir da análise censitária de seus acórdãos no período de 2015 a 2020. Portanto, este estudo, de natureza exploratória, procura reunir evidências estatisticamente significantes de que essa Corte de Contas pondera os efeitos concretos causados por suas decisões, em termos de criação, modificação ou extinção de direitos, deveres e proibições, antes de decidir e os expressa como um dos elementos da fundamentação de seus acórdãos ao lado de conceitos jurídicos indeterminados, para que estes nunca sejam sozinhos a razão de decidir.
+
+Para essa empreitada, construiu-se um banco de dados textual com todos os 31.475 acórdãos preferidos pelo TCU durante o período de análise a fim de se aplicar técnicas de mineração de texto por meio do software estatístico livre R, em busca da relevância semântica de determinadas expressões inseridas no corpo de inteiro teor das decisões, para enfim lograr êxito, como se observa da análise dos resultados.
+
+# Referencial teórico
+
+A fim de que se possa melhor compreender o ambiente histórico, jurídico e institucional em que se inseriu a proposta parlamentar que deu origem à Lei no 13.655/18 que alterou a Lei de Introdução às Normas do Direito Brasileiro, antes conhecida como Lei de Introdução ao Código Civil, será traçado um breve panorama que se desenrola em um cenário de opiniões nada unânimes (ALMEIDA, 2018, p. 147) entre os, de um lado, apoiadores das mudanças: representados por muitos juristas e acadêmicos ideólogos do pragmatismo jurídico, muitos deles de renome no universo jurídico nacional; políticos; gestores públicos e representantes de grupos de interesse; os quais almejam que as multifacetadas relações estabelecidas com o Estado possam desenrolar-se sob uma atmosfera de elevada segurança jurídica (MARQUES NETO; MOREIRA, 2015, p. 9), especialmente em um contexto em que se franqueia espaço cada vez maior ao ingresso de capitais privados para o investimento em infraestruturas e prestação de serviços de interesse públicos. De outro, representantes dos órgãos potencialmente mais impactados pelas novas disposições legais, a saber: os órgãos de fiscalização e controle administrativo, sobretudo representados pelos Tribunais de Contas; bem como órgãos ínsitos ao Poder Judiciário, quando no trato de matéria afeta ao Direito Público.
+
+No Brasil, a partir da CF/88, que elencou expressamente diversos princípios incidentes sobre a Administração Pública (BARROSO, 2005, p. 37), verificou-se um adensamento, no plano jurídico, da importância reportada a essas normas de caráter diretivo, ao mesmo passo em que constata-se uma significativa ampliação dos mecanismos de controle da Administração, que por sua vez passa a assumir uma nova dimensão, não mais limitada somente ao controle de legalidade, mas também de eficiência: aferida em termos de resultados alcançados com o emprego dos recursos públicos.
+
+No plano das instituições, a Carta Constitucional de 88 dedicou seção própria para dispor expressamente sobre a natureza e abrangência do Controle Externo realizado pelo Poder Legislativo, com o auxílio do Tribunal de Contas; bem como para estatuir sobre o Controle Interno integrado a cada Poder, ao qual atribuiu, diretamente, entre as suas finalidades precípuas, o dever de apoiar o controle externo no exercício de sua missão institucional.
+
+Nesse contexto, ganha relevo crescente o dever de transparência como quesito de qualidade da boa gestão pública e pressuposto viabilizador do controle, que avança para sindicar também, sob certos aspectos, a esfera de discricionariedade antes conferida de maneira mais ampla ao gestor público (CASTRO NETO et al., 2019, p. 195-197).
+
+No plano fático, percebe-se, ainda, uma tendência de crescente complexidade das múltiplas relações que entrelaçam o Estado com a economia e com os diversos interesses que orbitam ao seu redor em um mundo globalizado, quer quando atua na condição de agente indutor do desenvolvimento econômico nacional, quer na qualidade de Estado Administrador ou Regulador, de que decorrem também arranjos cada vez mais intricados na seara social, política e institucional, com relevantes e inevitáveis reflexos na órbita do direito, que se traduzem tanto na necessidade de produção de normas legais (em sentido amplo) capazes de estabilizar tais relações e albergar os interesses legítimos neles envolvidos, como também na adequada aplicação do direito delas imanente a cada caso concreto, em um mundo dinâmico.
+
+Contudo, por outro lado, um exame atento do texto do Projeto de Lei que transitou no Senado, e que posteriormente deu corpo à novel Lei no 13.655/18, salienta de forma clara a percepção de seus idealizadores de que a consolidação da democracia e a crescente institucionalização do Poder Público trouxe, também, como efeitos colaterais indesejados, a proliferação de uma ampla legislação administrativa: tendente a regular o funcionamento e a atuação dos mais diversos órgãos do Estado, bem como a viabilizar os controles externo e interno incidentes sobre o seu desempenho; mas que, no entanto, no sentir desses estudiosos, não logrou êxito em termos de promover o avanço da segurança jurídica (BRASIL, 2015a).
+
+Para Hohmann e Coelho (2020, p. 307), "essa complexidade trouxe grandes desafios ao direito administrativo, verificando-se uma enorme proliferação legislativa no ramo, de forma assistemática e pautada essencialmente em princípios", os quais supostamente logo teriam se tornado o principal crivo decisório adotado de maneira exacerbada pelos agentes judicantes, quer na instância administrativa, quer na judicial, por ocasião do julgamento de atos praticados por gestores públicos, conforme asseveram os pragmáticos.
+
+Contudo, ao interpretar esse ambiente permeado de princípios, traço característico do Constitucionalismo pós-moderno (BARROSO, 2005, p. 2), Vitorelli (2020, p. 83-84), assenta de maneira equilibrada:
+
+> Desse modo, é inegável que 1) conceitos jurídicos indeterminados representam um desafio para o administrador público e para o jurista; 2) quando esses conceitos estão plasmados na Constituição ou na lei, eles são dotados de normatividade e, por isso, vinculam a conduta da administração; 3) operar em um sistema com esse perfil aumenta o risco da atividade pública e dificulta o trabalho dos agentes que atuam pautados pela norma jurídica; 4) os conceitos indeterminados, por serem normativos, podem ser concretizados pela atuação jurisdicional; e 5) a jurisdição poderá invalidar atos administrativos e impor sanções aos gestores que, de modo injustificável, se afastam dos ditames da ordem jurídica, sejam estes dotados de maior ou menor grau de abstração.
+
+Ao mesmo tempo, a partir desse cenário, também ganham relevo cada vez maior os mecanismos de fomento econômico e as formas de atração de capital privado para a realização de investimentos em serviços e infraestrutura públicos necessários à consecução dos fins do Estado. Nessa linha, a percepção dos efeitos deletérios eventualmente decorrentes de decisões fundadas precipuamente sob “preceitos vagos” (SANTANA, 2018, p. 26), isto é, não traduzidos em termos concretos e mensuráveis no contexto dos fatos impugnados; aliada à cognição de que tanto as instituições do Estado como o ordenamento jurídico devem concorrer para um fim único, qual seja o de garantir a segurança jurídica das relações traçadas sob a égide do Direito Público: parece ter sido a principal mola propulsora do movimento que culminou na idealização da Lei no 13.655/18 (SUNDFELD, 2019, p. 34), que alterou substancialmente a Lei de Introdução às Normas do Direito Brasileiro. Em outras palavras, vale dizer que essa percepção de haver um relativo desalinho entre os fins almejados pelo Estado e os termos pelos quais ele se expressa quando por ocasião do exame das relações jurídicas das quais ele, o Estado, figura como parte na busca da concretização de seus ideais, reverberou nesse momento histórico, sobretudo se considerada a amplitude das dimensões econômica, social e também política que gravitam em torno de tais relações, e que delas decorrem (BRASIL, 2015b, p. 5).
+
+Ainda acerca desse contexto em que a novel Lei, também chamada “Lei da Segurança para a Inovação Pública” (ALMEIDA, 2018, p. 147), foi inserida em nosso ordenamento jurídico, embora, a rigor, reconheça-se não se tratar de inovações inéditas em relação a todo o ordenamento (SUNDFELD, 2019, p. 35), posto que a mesma essência de tais preceitos pode ser verificada também, de maneira esparsa, em outras normas jurídicas de lavra mais ou menos recente, como na esfera do Direito Civil, Vitorelli (2020) salienta que a LINDB vigorava praticamente inalterada desde 1942, mas foi alterada significativamente em 2018, ocasião em que recebeu de uma única vez o acréscimo de 11 novos dispositivos:
+
+> [...] os quais agregaram todo um tema do qual até então o diploma sequer se ocupava: a segurança jurídica na edição dos atos administrativos. A LINDB, que sempre foi um diploma importante para o direito internacional privado, para o direito civil e para a hermenêutica jurídica, foi integrada também no universo do direito administrativo (VITORELLI, 2020, p. 81, grifo dos autores).
+
+Ante tal cenário, fala-se na construção de um "direito mais que administrativo" (SUNDFELD, 2019, p. 35), capaz de lidar, também, com a construção do interesse público para além do âmbito da Administração (BARBOSA, 2020, p. 21). Passa-se a cogitar a ampliação do conceito de controle de legalidade para o de controle de juridicidade, consistente este último na verificação do ato em consonância com o ordenamento jurídico, sobretudo com a Constituição Federal (ALMEIDA, 2018; ARAGÃO, 2015; BRANDIS, 2018; HOHMANN; COELHO, 2020; VITORELLI, 2020), em detrimento da clássica aferição quanto à obediência à legalidade estrita e formal, com vistas à busca da máxima efetividade normativa aplicável a realidade fática contemporânea (CONRADO; MENEGUIN, 2019, p. 62).
+
+No que tange às discussões acerca do teor jurídico das disposições carreadas pela Lei no 13.655/18, bem como de seus inevitáveis reflexos sobre o Direito Público brasileiro, registra-se que nos planos acadêmico e doutrinário foram suscitados abalizados argumentos: formulados tanto pelos defensores dos novos preceitos jurídicos que foram infundidos na LINDB, como também por respeitados juristas que se ocuparam de contrapô-los, dentre os quais, Diniz (2018, p. 315-316). Tal dialética, quando considerada pela qualidade técnica dos ideólogos que se apresentaram para o debate em cada um dos polos da discussão, em conjunto com a pertinência de seus argumentos, confere noção de quão elevado foi o ambiente técnico em que se forjou a referida Lei.
+
+Malgrado isso, o componente político ínsito à problemática que serviu de motivação ao legislador parece ter sido preponderante nesse cenário para a aprovação do referido diploma normativo, tal como ocorreu.
+
+# Métodos e técnicas
+
+Este é um estudo exploratório, de abordagem quantitativa e utiliza a Jurimetria, Estatística aplicada ao Direito. Foi utilizada a linguagem Java para obtenção dos dados e criação da base de dados a ser analisada e a Ciência de Dados, através do software estatístico livre R, versão 4.0.3. Para a execução deste trabalho, foram utilizados todos os acórdãos exarados pelo TCU durante o período de 2015 a 2020. Os dados utilizados foram extraídos diretamente do sítio eletrônico do TCU de pesquisa integrada através de requisições HTTP à API, disponível no endereço https://pesquisa.apps.tcu.gov.br/rest/publico/base/acordao-completo/documento, passando os parâmetros:
+
+- termo: *
+- filtro: COPIATIPO:&quot;ACÓRDÃO&quot;, ANOACORDAO: “ano”
+- ordenação: DTRELEVANCIA, NUMACORDAOINT
+- quantidade: 1
+- início: índice do acordão
+
+Manipulando os valores de ano e índice do acordão de forma iterativa, foi possível extrair todos os dados dos acórdãos. Posteriormente, foi criada uma base de dados no PostgreSQL com todos os acórdãos contidos no período.
+
+A base de dados criada é constituída por uma tabela em que cada registro ou linha representa um acordão e cada atributo ou coluna, uma seção. Dessa forma, a base de dados final é composta por 20 variáveis, a saber: Número do Acórdão, Chave, Colegiado, Relator, Processo, Tipo de Processo, Data da Sessão, Número da Ata, Interessado / Responsável / Recorrente, Entidade, Representante do Ministério Público, Unidade Técnica, Representante Legal, Assunto, Sumário, Acordão, Quórum, Relatório, Situação e Fragmentos do Inteiro Teor.
+
+O tf-idf consiste numa métrica utilizada em mineração de texto que expressa a importância de um termo dentro de uma coleção de documentos, denominada corpus, e é composto por duas medidas, a frequência do termo ou term frequency (tf) e a frequência inversa do documento ou inverse document frequency (idf) (SILGE; ROBINSON, 2017).
+
+A tf é dada pela quantidade de vezes que um termo se repete em um documento, dividida pelo total de termos do documento. Essa normalização é feita de forma a considerar diferentes tamanhos de documento. Assim, dado um termo t, a tf(t) é expressa como:
+
+\begin{equation}
+t(f) = \frac{quantidade\: de\: ocorrências\: do\: termo\: t\: no\: documento}{quantidade\: de\: termos\: no\: documento}
+\end{equation}
+
+Como muitas vezes palavras comuns em diferentes documentos da coleção ou corpus são pouco relevantes para análises, a idf atribui pesos aos termos: pesos menores para termos comumente utilizados e pesos maiores para termos menos utilizados, valorizando termos raros e mensurando a importância do termo no corpus.
+
+\begin{equation}
+idf(t) = \ln \left ( \frac{quantidade\: de\: documentos}{quantidade\: de\: documentos\: que\: contém\: o\: termo\: t} \right )
+\end{equation}
+
+O produto dessas duas medidas resulta no tf-idf. Termos que aparecem em muitos documentos têm idf pequena e, consequentemente, tf-idf pequeno e termos que aparecem com frequência menor nos documentos e que podem ser considerados relevantes para distinguir o conteúdo de um determinado documento dos outros, terão maior tf-idf.
+
+\begin{equation}
+tf-idf(t) = tf(t) * idf(t)
+\end{equation}
+
+Com esta técnica, é possível obter uma medida de relevância para cada termo de determinado documento em relação aos documentos contidos no corpus.
+
+A implementação do tf-idf foi feita no R, utilizando o pacote tidytext e o campo Relatório dos acórdãos. Foram excluídas as stop-words, palavras comuns que não possuem semântica significativa, por meio do pacote stopwords e foram selecionados termos de interesse expressos nos art. 20 e 21 da LINDB que indicam sua utilização e aplicação do Consequencialismo nas decisões do TCU, sendo eles: “valores jurídicos abstratos”, “consequências práticas”, “consequências jurídicas”, “consequências jurídicas e administrativas” e “lindb”.
+
+# Análise dos resultados
+
+No período de análise, compreendido de 2015 a 2020, foram identificados 31.475 acórdãos proferidos pelo TCU, dentre os quais 985 decisões apresentam ao menos um dos termos de interesse com semântica textual relevante ao Consequencialismo, indicada pelo cálculo do tf-idf. A Tabela 1 apresenta os valores do tf-idf para cada termo de interesse ao longo do período de análise, observa-se que o termo “lindb” se destaca com o maior valor acumulado do tf-idf, representando 51,7% da soma total, imediatamente seguido pelo termo “consequências jurídicas”. Juntos, esses dois termos representam 87,4% da relevância semântica dos termos de interesse à investigação.
+
+```{r message = FALSE, echo = FALSE}
+source('tabelas.r')
+source('graficos.r')
+```
+
+```{r message = FALSE}
+tabela_valor_acumulado()
+```
+
+<p style="text-align: center">Fonte: Elaborada pelos autores.</p>
+
+O Gráfico 1 apresenta o comportamento do valor do tf-idf ao longo do tempo para todos os termos de interesse conjuntamente. A Lei no 13.655, que alterou a LINDB, entrou em vigor na data de 25 de abril de 2018, indicada no gráfico pela linha vertical tracejada. Percebe-se que, a partir de então, a presença dos preceitos relativos ao Consequencialismo tem evoluído significativamente: o crescimento do tf-idf de 2020 em relação ao ano anterior foi acima de 400%.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.1 – Evolução temporal do tf-idf dos termos de interesse.</p>
+
+```{r, fig.align='center', message = FALSE}
+grafico_tf_idf_por_ano("*")
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+Apesar de a LINDB estar em vigor há muito tempo, com a publicação do Decreto-Lei nº 4.657, de 4 de setembro de 1942, ao que tudo indica, apenas após a vigência da Nova LINDB é que o termo “lindb” passou a ter presença semântica relevante nos acórdãos do TCU, conforme se observa no Gráfico 2.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.2 – tf-idf do termo "lindb".</p>
+
+```{r, fig.align='center', message = FALSE}
+grafico_tf_idf_por_ano("lindb")
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+O Gráfico 3 apresenta a evolução temporal do tf-idf para o termo “consequências jurídicas”. Diferentemente dos gráficos anteriores, a relevância desse termo se tornou pronunciada apenas a partir de 2020, sendo que até 2019 se manteve aproximadamente constante.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.3 – tf-idf do termo "consequências jurídicas".</p>
+
+```{r, fig.align='center', message = FALSE}
+grafico_tf_idf_por_ano("consequências jurídicas")
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+O Gráfico 4 apresenta a evolução temporal do tf-idf para o termo "consequências práticas". Muito embora esse termo tenha sido expressamente incluído na LINDB com sua alteração promovida em 2018, percebe-se a sua presença semântica nos acórdãos do TCU anteriormente a esse evento.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.4 – tf-idf do termo "consequências práticas".</p>
+
+```{r, fig.align='center', message = FALSE}
+grafico_tf_idf_por_ano("consequências práticas")
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+Até 2018 não havia nenhuma ocorrência do termo “valores jurídicos abstratos” nos acórdãos do TCU, que foi introduzido na legislação com a Nova LINDB, assim como os termos mencionados anteriormente. O Gráfico 5 demonstra que esse termo começou a ser empregado com relevância semântica em 2018, tendo crescido significativamente em 2019 e 2020.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.5 – tf-idf do termo "valores jurídicos abstratos".</p>
+
+```{r, fig.align='center', message = FALSE}
+grafico_tf_idf_por_ano("valores jurídicos abstratos")
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+O termo “consequências jurídicas e administrativas” também foi introduzido com a alteração de 2018 da LINDB. Embora o termo “consequências jurídicas” já estivesse presente nos acórdãos do TCU antes dessa alteração, a combinação com a expressão “e administrativas” começou a indicar relevância apenas em 2018, com tendência de crescimento nos anos seguintes, conforme apresentado no Gráfico 6.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.6 – tf-idf do termo "consequências jurídicas e administrativas".</p>
+
+```{r, fig.align='center', message = FALSE}
+grafico_tf_idf_por_ano("consequências jurídicas e administrativas")
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+Conforme se depreende da análise temporal do cálculo do tf-idf, dois comportamentos podem ser observados para todos os termos introduzidos na LINDB com a alteração de 2018: (i) antes da alteração, a relevância semântica dos termos nos acórdãos do TCU era nula ou irrelevante, e (ii) após a alteração, esses termos passaram a apresentar relevância nas decisões do Tribunal de forma relativamente significativa e crescente.
+
+A produção média anual do TCU é de 5.246 acórdãos, proferidos pelo Plenário, 1a Câmara e 2a Câmara, totalizando 31.475 decisões no período de 2015 a 2020. Desse montante, foram identificados 985 acórdãos em que o Consequencialismo esteve presente, por meio do cálculo do tf-idf, o que representa 3,13% do total. A Tabela 2 mostra a quantidade de acórdãos publicados a cada ano.
+
+```{r message = FALSE}
+tabela_consequencialismo_ano()
+```
+
+<p style="text-align: center">Fonte: Elaborada pelos autores.</p>
+
+Apesar de o percentual médio de 3,13% não representar aparentemente uma participação relevante de acórdãos marcados pelo Consequencialismo, a análise anual dessa parcela demonstra um crescimento consistente, atingindo 9,96% em 2020, como se observa no Gráfico 7.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.7 – Percentual de acórdãos com Consequencialismo.</p>
+
+```{r, fig.align='center', message = FALSE}
+grafico_percentual_consequencialismo()
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+Para cada um dos 985 acórdãos, em que se constatou a presença do Consequencialismo, foi possível calcular o valor do tf-idf e analisar como esse parâmetro se distribui no conjunto de decisões. Se ordenados por valores decrescentes de tf-idf, observa-se que alguns poucos acórdãos têm elevado valor de tf-idf, quando comparado com os demais, mas a partir daí o valor de tf-idf dos acórdãos restantes acentuadamente decai assintoticamente tendendo a zero, conforme observado na forma da curva do Gráfico 8.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.8 – Acórdãos ordenados por valor de tf-idf.</p>
+
+```{r, fig.align='center', message = FALSE}
+grafico_acordaos_ordenados_tf_idf()
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+Por outro lado, procurou-se analisar também de que modo o conjunto de acórdãos estão distribuídos ao longo dos valores de tf-idf: o Gráfico 9 representa a densidade de acórdãos por intervalos fixos de tf-idf. Assim, o primeiro intervalo, cujo limite inferior é tf-idf = 0,000 e cujo limite superior é tf-idf = 0,002, podendo ser indicado pela notação [0,000; 0,002[ ou 0,000 ≤ tf-idf < 0,002, concentra 449 acórdãos; enquanto o último intervalo [0,046; 0,048[ contém apenas 1 acórdão. Portanto, é possível verificar que há 6 acórdãos que se localizam na metade superior de valores de tf-idf e os demais acórdãos, que representam 99,4% do total, na metade inferior.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.9 – Densidade de acórdãos.</p>
+
+```{r, fig.align='center', message = FALSE}
+grafico_densidade()
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+O TCU é um órgão colegiado, composto por nove Ministros, cujas decisões são proferidas pelo Plenário ou por uma de suas duas Câmaras. Além disso, compõem a Corte de Contas quatro Ministros-Substitutos, os quais terão, quando em substituição a Ministros, direitos e prerrogativas assegurados nos termos do Regimento Interno. Assim, os acórdãos do TCU podem ser relatados por um dos treze Ministros em exercício na Corte que, no período de 2015 a 2020, agrupados por relatoria e
+ordenados pelo valor de tf-idf, constituem os dados apresentados na Tabela 3.
+
+```{r message = FALSE}
+tabela_somatoria_tf_idf_por_relatoria()
+```
+
+<p style="text-align: center">Fonte: Elaborada pelos autores.</p>
+
+Interessa observar que o Ministro Benjamin Zymler conta com o maior valor de tf-idf indicativo da presença do Consequencialimos nas decisões da Corte de sua relatoria. Por outro lado, o Ministro Benjamin foi também aquele que relatou a maior quantidade de acórdãos no período.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.10 – tf-idf médio por relatoria.</p>
+
+```{r message = FALSE}
+grafico_tf_idf_medio_por_relatoria()
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+Assim sendo, ao calcular o valor médio de tf-idf por acórdão e reordenar o posicionamento dos Ministros segundo esse parâmetro, observa-se que o Ministro Aroldo Cedraz ocuparia a primeira posição e o Ministro Benjamin estaria na sexta colocação, conforme indica o Gráfico 10. Além disso, nota-se que seis ministros estão acima da média geral, enquanto sete estão abaixo dela.
+
+A Tabela 4 apresenta a distribuição do valor total do tf-idf de acordo com a atuação do Ministério Público junto ao TCU. Observa-se que quando o MPC exerce sua missão de guarda da lei e fiscalização de sua execução, o tf-idf tende a ser mais relevante, concentrando 77,8% do total para o período de análise.
+
+```{r message = FALSE}
+tabela_atuacao_mp()
+```
+
+<p style="text-align: center">Fonte: Elaborada pelos autores.</p>
+
+Além disso, a atuação do Ministério Público de Contas coincide com o crescimento, ao longo do tempo, do tf-idf como indicativo da consideração do Consequencialismo nas decisões do Tribunal, como se observa no Gráfico 11.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.11 – tf-idf segundo atuação do MPC.</p>
+
+```{r message = FALSE}
+grafico_atuacao_mp()
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+A Tabela 5 apresenta a distribuição do tf-idf para cada Ministro Relator em função da atuação do MPC. A maioria dos Ministros tende a apresentar maior valor de tf-idf quando o MPC atua nos processos de conta, entretanto, no caso de três Ministros, o comportamento foi inverso: Ministros Marcos Bemquerer, André de Carvalho e Augusto Sherman.
+
+```{r message = FALSE}
+tabela_relatoria_atuacao_mp()
+```
+
+<p style="text-align: center">Fonte: Elaborada pelos autores.</p>
+
+
+São membros do Ministério Público junto ao TCU o Procurador-Geral, os Subprocuradores-Gerais e os Procuradores. Nesse sentido, a Tabela 6 indica a atuação ou não desses membros do MPC nos processos de contas e o valor do tf-idf totalizado para o período de análise. Observa-se que o Procurador Júlio Marcelo apresenta o maior tf-idf indicativo do Consequencialismo, enquanto o Subprocurador-Geral Paulo Bugarin o menor parâmetro.
+
+```{r message = FALSE}
+tabela_tf_idf_por_procurador()
+```
+
+<p style="text-align: center">Fonte: Elaborada pelos autores.</p>
+
+O processo de contas compreende o conjunto de atividades de controle externo destinado a avaliar e julgar o desempenho e a conformidade da gestão das pessoas abrangidas pela jurisdição do Tribunal, de acordo com a Lei Orgânica do TCU. Atualmente, a Corte de Contas dispõe de 23 tipos de processos de contas e o Gráfico 12 apresenta a sua ordenação pelo valor decrescente do tf-idf acumulado no período de análise.
+
+Observa-se que os processos de aposentadoria (APOS) e de tomada de contas especial (TCE) concentram 80% na curva de Pareto. Embora esse comportamento, em certa medida, fosse esperado, vez que esses processos são os mais numerosos dentre os tipos conduzidos pela Corte de Contas, o TCE acumula mais processos, 13.914 no período de análise, mas apresenta menor valor de ti-idf (0,65642) quando comparado com o APOS, 6.126 processos e 1,69754 de tf-idf.
+
+<p style="text-align: center; margin-bottom: 0;">Gráfico 4.12 – tf-idf por tipo de processo.</p>
+
+```{r message = FALSE}
+grafico_tipo_processo()
+```
+
+<p style="text-align: center">Fonte: Elaborado pelos autores.</p>
+
+As ações de controle externo são conduzidas pelas unidades técnicas do TCU. Trata-se das secretarias de controle externo que integram as secretarias do Tribunal. Além da fiscalização, essas unidades técnicas são encarregadas de assessorar os relatores em matéria inerente ao controle externo e oferecer subsídios técnicos para julgamento de contas e apreciação dos demais processos relativos aos órgãos e entidades sujeitos à jurisdição do Tribunal.
+
+Nesse sentido, a Tabela 7 apresenta a distribuição do tf-idf entre as unidades do TCU, ao longo do período de análise. A Secretaria-Geral Adjunta de Controle Externo (Adgecex) concentra os maiores valores, enquanto a Secretaria-Geral da Presidência (Segepres) e a Secretaria-Geral de Controle Externo (Segecex) registraram algum nível de td-idf em acórdãos proferidos antes da Nova LINDB, mas recentemente não mais.
+
+```{r message = FALSE}
+tabela_tf_idf_por_unidade()
+```
+
+<p style="text-align: center">Fonte: Elaborada pelos autores.</p>
+
+
+# Considerações finais
+
+A apresentação e a análise dos resultados obtidos da investigação permitem confirmar a hipótese de que, a partir da vigência a Nova LINDB, o TCU vem demonstrando maior adesão aos preceitos do Consequencialismo em suas decisões. Em que pese seu posicionamento crítico inicial, em 2018, com relação às modificações normativas promovidas na esfera controladora, mais quanto à forma que ao conteúdo, nos anos seguintes, ao que tudo indica, o Tribunal tem consistentemente aumentado a ancoragem de seus acórdãos em fundamentos concretos que consideram os efeitos práticos de suas decisões e a realidade fática de seus jurisdicionados. Em princípio, não seria uma conclusão surpreendente, pois a Corte de Contas, no exercício de sua missão fiscalizatória da adequada aplicação dos recursos públicos, não deixaria de observar a norma posta e vigente.
+
+Assim sendo, os objetivos propostos por este trabalho exploratório foram atingidos, especialmente quanto à identificação de um indicador quantitativo que pudesse mensurar o posicionamento do TCU frente à Nova LINDB, a partir da análise censitária de toda a população de dados, e não da análise qualitativa de apenas alguns acórdãos previamente selecionados em bases não estatísticas. Neste ponto, vale registrar que os termos de interesse utilizados para a avaliação semântica na construção daquele indicador foram selecionados segundo um critério objetivo e não arbitrário, qual seja expressões literais presentes nos artigos da lei que alterou a LINDB, entretanto, deve-se reconhecer que outros critérios poderiam ser selecionados e, eventualmente, confrontados entre si a partir dos resultados que pudessem ser obtidos, a fim de refinar a investigação semântica. Essas possibilidades reforçam o potencial de aplicação da mineração de texto na Jurimetria.
+
+Com relação aos achados da pesquisa, é interessante observar os diferentes posicionamentos dos Ministros do Tribunal, na condição de Relator, diante das orientações da Nova LINDB, bem como suas variações frente à atuação ou não de Procuradores do MPC. Também se observou que os processos de aposentadoria são os mais representativos, em termos de aplicação do Consequencialismo, imediatamente seguidos pelos processos de tomada de contas especial; possivelmente porque esses processos de contas também são os mais numerosos, ainda que em ordem invertida, mas também em razão da natureza desses processos, provavelmente mais suscetíveis à incidência da Nova LINDB. Além disso, poderia como tal ser objeto de investigações futuras a avaliação qualitativa dos 6 acórdãos com elevado valor de tf-idf para buscar confirmar a eventual existência de algum padrão comum a eles ou compreender as razões desse destaque quantitativo.
+
+Por fim, cumpre ressaltar que a mineração de texto se mostrou como importante ferramenta a serviço da estatística aplicada ao Direito, não apenas para sintetizar dados capazes de confirmar hipóteses inicialmente formuladas, bem como para oportunizar novos caminhos de investigação como, por exemplo, a identificação de posicionamento dos Ministros do TCU em função da natureza da matéria em julgamento, ou de sua formação acadêmica e trajetória profissional. Por outro lado, contudo, limita-se a uma abordagem quantitativa, não prescindindo, por uma vista, de avaliações qualitativas complementares, mas, por outra, indicando proposições de direção para essas averiguações adicionais.
+
+# Referências {-}
+
+ALMEIDA, Péricles Ferreira de. Considerações sobre a nova Lei de Introdução às Normas do Direito Brasileiro (Lei nº 13.665/2018). **Revista de Direito Público da Economia** – RDPE, Belo Horizonte, ano 16, n. 64, p. 147-174, out./dez. 2018.
+
+
+ARAGÃO, Alexandre Santos de. Artigo 21. In: PEREIRA, Flávio Henrique Unes (coord.). **Segurança jurídica e qualidade das decisões públicas**: Desafios de uma sociedade democrática. Brasília: Senado Federal, 2015. p. 20-22.
+
+
+BARBOSA, Bernardo Souza. **O consequencialismo e a mitigação das perdas no controle de contratos administrativos pelo Tribunal de Contas da União**. 2020. Dissertação (Mestrado em Direito) - Escola de Direito de São Paulo, Fundação Getúlio Vargas, São Paulo, 25 jun. 2020. Disponível em: https://bibliotecadigital.fgv.br/dspace/handle/10438/29450. Acesso em: 28 nov. 2020.
+
+
+BARROSO, Luís Roberto. Neoconstitucionalismo e constitucionalização do Direito: O triunfo tardio do direito constitucional no Brasil. **Revista de Direito Administrativo**, v. 240, p. 1-42, 2005. Disponível em: http://bibliotecadigital.fgv.br/ojs/index.php/rda/article/view/43618/44695. Acesso em 29 nov. 2020.
+
+
+BRANDIS, Juliano Oliveira. A Lei no 13.655/2018, o Pragmatismo Jurídico e a Atuação dos Tribunais de Contas. **RSDA**, n. 156, dez. 2018 – Parte Geral – Doutrina.
+
+
+BRASIL. Consultoria Jurídica do Tribunal de Contas da União. **Parecer**, de 20 de abril de 2018. PROCESSO TCU/CONJUR: TC-012.028/2018-5. Interessado: Tribunal de Contas da União. Parecer do Projeto de Lei no 7.448/2017, em face do parecer-resposta elaborado pelos autores do projeto em relação à análise preliminar que esta Consultoria havia realizado. Brasília, DF: Tribunal de Contas da União, 2018. Disponível em: https://cdn.oantagonista.net/uploads/2018/04/PL-7448-2017- Inteiro-teor-Altera-LINDB-Parecer-Conjur-2018-04-20.pdf. Acesso em: 10 out. 2020.
+
+
+BRASIL. Senado Federal. **Projeto de Lei do Senado nº 349, de 2015**. Inclui, na Lei de Introdução às Normas do Direito Brasileiro (Decreto-lei n. 4.657, de 1942), disposições sobre segurança jurídica e eficiência na criação e aplicação do direito público. Brasília, DF: Senado Federal, 2015a. Disponível em: https://www25.senado.leg.br/web/atividade/materias/-/materia/121664. Acesso em: 29 nov. 2020.
+
+
+BRASIL. Senado Federal. **Segurança jurídica e qualidade das decisões públicas**: Desafios de uma sociedade democrática. Coordenação: Flávio Henrique Unes Pereira. Apresentação: Antonio Augusto Junho Anastasia. Brasília, DF: Senado Federal, 2015b.
+
+
+BRASIL. Supremo Tribunal Federal. **Tema com repercussão geral 445**. Incidência do prazo decadencial previsto no art. 54 da Lei 9.784/1999 para a Administração anular ato de concessão de aposentadoria. Relator: Min. Gilmar Mendes, 19 fev. 2020. Disponível em: http://www.stf.jus.br/portal/jurisprudenciaRepercussao/verAndamentoProcesso.asp?i ncidente=4043019&amp;numeroProcesso=636553&amp;classeProcesso=RE&amp;numeroTema= 445#. Acesso em: 11 set. 2021.
+
+
+CASTRO NETO, Joaquim Alves de; GUIMARÃES, Leandro Bottazo; SOUZA, Marco Aurélio Batis de; PEREIRA NETO, Rubens Custódio. Projetos como uma estratégia para o desenvolvimento sustentável da função de auditoria operacional. In: LIMA, Edilberto Carlos Pontes (Coord.). **Tribunal de Contas do século XXI**. Belo Horizonte: Fórum, 2019. Disponível em: https://irbcontas.org.br/wp- content/uploads/2020/04/Tribunal-de-Contas-do-S%C3%A9culo-XXI.pdf. Acesso em: 14 ago. 2021.
+
+
+CONRADO, Márcio Macedo e MENEGUIN, Fernando B. Impactos da Lei nº 13.655/2018 nos órgãos de controle e seus reflexos na Administração Pública. **Revista Brasileira de Direito Público** – RBDP, Belo Horizonte, ano 17, n. 67, p. 59- 79, out./dez. 2019.
+
+
+DINIZ, Maria Helena. Artigos 20 a 30 da LINDB como novos paradigmas hermenêuticos do Direito Público, voltados à segurança jurídica e à eficiência administrativa. **Revista Argumentum** – RA, eISSN 2359-6889, Marília/SP, v. 19, n. 2, p. 305-318, mai./ago. 2018.
+
+
+HOHMANN, Ana Carolina e COELHO, Fernanda. As alterações da LINDB e as novas perspectivas do controle da Administração Pública. **Revista de Direito Administrativo e Infraestrutura**, vol. 14/2020, p. 305–340, jul./set. 2020.
+
+
+MARQUES NETO, Floriano Azevedo; MOREIRA, Egon Bockmann. Uma Lei para o Estado de Direito Contemporâneo. In: BRASIL. Senado Federal. **Segurança jurídica e qualidade das decisões públicas.** Desafios de uma sociedade democrática. Coordenação: Flávio Henrique Unes Pereira. Apresentação: Antonio Augusto Junho Anastasia. Brasília, 2015. p. 9-12.
+
+
+SANTANA, Jair. Administração Pública e interpretação de normas de Direito Público: a Lei nº 13.655, de 25 de abril de 2018 – blockers e makers (parte 1 – art. 20). **Fórum Administrativo** – FA, Belo Horizonte, ano 18, n. 208, p. 24-29, jun. 2018.
+
+
+SILGE, Julia; ROBINSON, David. **Text mining with R**: A tidy approach. Estados Unidos: O’Reilly Media, 2017, não paginado. Disponível em: https://www.tidytextmining.com/index.html. Acesso em: 26 nov. 2020.
+
+
+SUNDFELD, Carlos Ari. A Lei de Introdução às Normas do Direito Brasileiro e sua renovação. In: FILHO, Alexandre Jorge Carneiro da Cunha; ISSA, Rafael Hamze; SCHWIND, Rafael Wallbach (coord.). **Lei de Introdução às Normas do Direito Brasileiro – Anotada**: Decreto-Lei nº 4.657, de 4 de setembro de 1942. São Paulo: Quartier Latin do Brasil, 2019. p. 33-39.
+
+
+SUNDFELD, Carlos Ari; MARQUES NETO, Floriano de Azevedo. Uma nova lei para aumentar a qualidade jurídica das decisões públicas e de seu controle. In: SUNDFELD, Carlos Ari (org.). **Contratações públicas e seu controle.** São Paulo: SBDP: Malheiros, 2013. 1 arquivo pdf.
+
+
+VITORELLI, Edilson. A Lei de Introdução às Normas do Direito Brasileiro e a ampliação dos parâmetros de controle dos atos administrativos discricionários: o direito na era do consequencialismo. **Revista de Direito Administrativo da Fundação Getúlio Vargas.** Rio de Janeiro, V. 279, n. 2, p. 79-112, mai./ago. 2020 Disponível em: http://dx.doi.org/10.12660/rda.v279.2020.82006. Acesso em: 28 nov. 2020.
