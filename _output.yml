@@ -5,7 +5,7 @@ bookdown::gitbook:
     toc:
       collapse: none
       before: |
-        <h3 style="text-align: center;">TCC TMCSP-EGC</h3>
+        <h3 style="text-align: center;">TCC TCMSP-EGC</h3>
     download: null
     edit: null
     sharing:
